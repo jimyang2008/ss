@@ -1,0 +1,15 @@
+[Unit]
+Description=Chinadns
+After=network.target
+
+[Service]
+Type=simple
+User=nobody
+PermissionsStartOnly=true
+ExecStart=/usr/local/bin/chinadns \
+	-m \
+    -p 5333 \
+	-c /etc/chnroute.txt
+
+[Install]
+WantedBy=multi-user.target

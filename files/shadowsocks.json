@@ -1,0 +1,5 @@
+{
+    "server_port" : 7777,
+    "method" : "chacha20-ietf-poly1305",
+    "password" : "cisco123"
+}

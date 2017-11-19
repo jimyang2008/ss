@@ -1,0 +1,9 @@
+create lan hash:net family inet hashsize 1024 maxelem 65536
+add lan 240.0.0.0/4
+add lan 192.168.0.0/16
+add lan 172.16.0.0/12
+add lan 10.0.0.0/8
+add lan 169.254.0.0/16
+add lan 127.0.0.0/8
+add lan 224.0.0.0/4
+add lan 0.0.0.0/8
