@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 
 CMDDIR=$(dirname $0)
 SS_CONFIG=/etc/shadowsocks-libev/config.json 
@@ -46,6 +47,9 @@ setup_fw() {
     # Apply the rules
     iptables -t nat -A PREROUTING -p tcp -s $LAN_CIDR -j SHADOWSOCKS
     iptables -t mangle -A PREROUTING -p tcp -s $LAN_CIDR -j SHADOWSOCKS
+
+    # Add NAT
+    iptables -t nat -A POSTROUTING -s $LAN_CIDR -j MASQUERADE
 
 }
 
