@@ -3,7 +3,7 @@
 STAIFNAME=wlan0
 APIFNAME=wlan1
 APIFMAC=$(ifconfig wlan0 |awk '/ether/ {print $2}')
-APIFMAC=${APIFMAC:-'b8:27:eb:1c:98:53'}
+APIFMAC="${APIFMAC%?}$(( (${APIFMAC: -1} + 1) % 10 ))"
 APIFIP=192.168.6.1
 
 ifconfig $STAIFNAME down
