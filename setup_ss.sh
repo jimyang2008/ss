@@ -83,10 +83,40 @@ prepare_chnroute() {
     test -s $tmp_chnroute && cp -f $tmp_chnroute $chnroute
 }
 
+install_sslibev() {
+    sh -c 'printf "deb http://deb.debian.org/debian stretch-backports main" > /etc/apt/sources.list.d/stretch-backports.list'
+    apt-get update -y
+    apt-get -t stretch-backports install -y --allow-unauthenticated shadowsocks-libev
+}
+
+install_chinadns() {
+    (
+    curl -LOk https://github.com/shadowsocks/ChinaDNS/releases/download/1.3.2/chinadns-1.3.2.tar.gz
+    tar -xzf chinadns-1.3.2.tar.gz
+    cd chinadns-1.3.2
+    ./configure && make
+    cp src/chinadns /usr/local/bin/
+    )
+}
+
 test $(id -u) == $(id -u root) || {
     err This script must be run with ROOT privilege
     exit 1
 }
+
+apt-get update -y
+apt-get install -y \
+    --no-install-recommends \
+    --allow-unauthenticated \
+    gettext build-essential autoconf libtool \
+    libpcre3-dev asciidoc xmlto libev-dev \
+    libc-ares-dev automake libmbedtls-dev \
+    libsodium-dev hostapd dnsmasq ipset
+apt-get upgrade -y dhcpcd5
+install_sslibev
+install_chinadns
+
+rsync -av $CMDDIR/files/etc/ /etc/
 
 setup_fw
 setup_service shadowsocks-libev
@@ -94,7 +124,5 @@ setup_service shadowsocks-libev
 prepare_chnroute
 setup_service chinadns
 
-# Start the shadowsocks-redir
-#ss-redir -u -c /etc/shadowsocks-libev/config.json -f /var/run/shadowsocks.pid
 
 
