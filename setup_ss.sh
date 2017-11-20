@@ -51,6 +51,9 @@ setup_fw() {
     # Add NAT
     iptables -t nat -A POSTROUTING -s $LAN_CIDR -j MASQUERADE
 
+    ipset save > /etc/ipset.save
+    iptables-save > /etc/iptables.save
+
 }
 
 setup_service() {
@@ -120,6 +123,7 @@ rsync -av $CMDDIR/files/etc/ /etc/
 
 setup_fw
 setup_service shadowsocks-libev
+setup_service chinadns
 
 prepare_chnroute
 setup_service chinadns
