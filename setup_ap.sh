@@ -23,7 +23,7 @@ do
     sleep 10
 done
 
-while ! ifconfig $STAIFNAME | grep inet
+while ! ifconfig $STAIFNAME | grep -w inet
 do
     systemctl restart dhcpcd
     sleep 10
