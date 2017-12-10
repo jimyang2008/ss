@@ -1,5 +1,9 @@
 #!/bin/bash
 
+: ${SS_PASSWORD:='cisco123'}
+: ${SS_METHOD:='chacha20-iety-poly1305'}
+: ${SS_PORT:='8888'}
+
 err() {
     msg="$@"
     echo "ERROR: $msg" >&2
@@ -97,6 +101,21 @@ install_centos-7() {
     yum install -y shadowsocks-libev
 }
 
+init_config() {
+    cfg_dir=/etc/shadowsocks-libev
+    test -d $cfg_dir || mkdir $cfg_dir
+    cat <<EOC >$cfg_dir/config.json
+{
+    "server" : "$SS_SERVER",
+    "server_port" : $SS_PORT,
+    "password" : "$SS_PASSWORD",
+    "method" : "$SS_METHOD"
+}
+EOC
+    echo -n "ss://"`echo -n ${SS_METHOD}:${SS_PASSWORD}@${SS_SERVER}:${SS_PORT} \
+      | base64` | qr > $cfg_dir/ss.png
+}
+
 main() {
     test $(id -u) == $(id -u root) || {
         err "Root privilege required"
@@ -104,6 +123,7 @@ main() {
     }
     distro=$(get_distro)
     install_${distro}
+    init_config
 }
 
 main
