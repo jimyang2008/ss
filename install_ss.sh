@@ -92,9 +92,11 @@ install_centos-7() {
 
     # install dependencies
     yum install epel-release -y
-    yum install gcc gettext autoconf libtool automake make pcre-devel asciidoc xmlto udns-devel libev-devel -y
+    yum update -y
+    yum install gcc gettext autoconf libtool automake make pcre-devel asciidoc xmlto udns-devel libev-devel python-pip -y
+    pip install qrcode
 
-    # install hsadowsocks-libev
+    # install shadowsocks-libev
     curl -Lk \
       -o /etc/yum.repos.d/librehat-shadowsocks-epel-7.repo \
       https://copr.fedoraproject.org/coprs/librehat/shadowsocks/repo/epel-7/librehat-shadowsocks-epel-7.repo
