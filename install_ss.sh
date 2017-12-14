@@ -27,7 +27,7 @@ install_ubuntu-16.04() {
 }
 
 install_libsodium() {
-    export LIBSODIUM_VER=1.0.13
+    export LIBSODIUM_VER=1.0.15
     curl -LOk https://download.libsodium.org/libsodium/releases/libsodium-$LIBSODIUM_VER.tar.gz
     tar -xzf libsodium-$LIBSODIUM_VER.tar.gz
     pushd libsodium-$LIBSODIUM_VER
@@ -55,7 +55,9 @@ install_centos-6() {
     yum update -y
 
     # build environment
-    yum install -y gettext gcc autoconf libtool automake make asciidoc xmlto c-ares-devel libev-devel
+    yum install epel-release -y
+    #yum install -y gettext gcc autoconf libtool automake make asciidoc xmlto c-ares-devel libev-devel
+    yum install -y gettext gcc autoconf libtool automake make asciidoc xmlto c-ares-devel libev-devel pcre-devel
 
     install_libsodium
     install_mbedtls
