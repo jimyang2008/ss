@@ -1,5 +1,9 @@
 #!/bin/bash
 
+: ${SS_PASSWORD:='cisco123'}
+: ${SS_METHOD:='chacha20-iety-poly1305'}
+: ${SS_PORT:='8888'}
+
 err() {
     msg="$@"
     echo "ERROR: $msg" >&2
@@ -90,13 +94,30 @@ install_centos-7() {
 
     # install dependencies
     yum install epel-release -y
-    yum install gcc gettext autoconf libtool automake make pcre-devel asciidoc xmlto udns-devel libev-devel -y
+    yum update -y
+    yum install gcc gettext autoconf libtool automake make pcre-devel asciidoc xmlto udns-devel libev-devel python-pip -y
+    pip install qrcode
 
-    # install hsadowsocks-libev
+    # install shadowsocks-libev
     curl -Lk \
       -o /etc/yum.repos.d/librehat-shadowsocks-epel-7.repo \
       https://copr.fedoraproject.org/coprs/librehat/shadowsocks/repo/epel-7/librehat-shadowsocks-epel-7.repo
     yum install -y shadowsocks-libev
+}
+
+init_config() {
+    cfg_dir=/etc/shadowsocks-libev
+    test -d $cfg_dir || mkdir $cfg_dir
+    cat <<EOC >$cfg_dir/config.json
+{
+    "server" : "$SS_SERVER",
+    "server_port" : $SS_PORT,
+    "password" : "$SS_PASSWORD",
+    "method" : "$SS_METHOD"
+}
+EOC
+    echo -n "ss://"`echo -n ${SS_METHOD}:${SS_PASSWORD}@${SS_SERVER}:${SS_PORT} \
+      | base64` | qr > $cfg_dir/ss.png
 }
 
 main() {
@@ -106,6 +127,7 @@ main() {
     }
     distro=$(get_distro)
     install_${distro}
+    init_config
 }
 
 main
