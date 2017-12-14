@@ -1,6 +1,6 @@
 #!/bin/bash
 
-: ${SS_PASSWORD:='cisco123'}
+: ${SS_PASSWORD:='changeit'}
 : ${SS_METHOD:='chacha20-iety-poly1305'}
 : ${SS_PORT:='8888'}
 
