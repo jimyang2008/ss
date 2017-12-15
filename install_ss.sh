@@ -1,12 +1,19 @@
 #!/bin/bash
 
 : ${SS_PASSWORD:='changeit'}
-: ${SS_METHOD:='chacha20-iety-poly1305'}
+: ${SS_METHOD:='chacha20-ietf-poly1305'}
 : ${SS_PORT:='8888'}
 
 err() {
     msg="$@"
     echo "ERROR: $msg" >&2
+}
+
+get_value() {
+    var_name=$1
+    def_value=${!var_name}
+    read -p "$var_name[ENTER=$def_value]:" ans
+    test -n "$ans" && eval "$var_name=$ans"
 }
 
 get_distro() {
@@ -28,6 +35,7 @@ install_ubuntu-16.04() {
     add-apt-repository ppa:max-c-lv/shadowsocks-libev -y
     apt-get update -y
     apt install -y shadowsocks-libev
+    apt-get install -y qrencode
 }
 
 install_libsodium() {
@@ -59,9 +67,8 @@ install_centos-6() {
     yum update -y
 
     # build environment
-    yum install epel-release -y
-    #yum install -y gettext gcc autoconf libtool automake make asciidoc xmlto c-ares-devel libev-devel
-    yum install -y gettext gcc autoconf libtool automake make asciidoc xmlto c-ares-devel libev-devel pcre-devel
+    yum install --enablerepo=extras epel-release -y
+    yum install -y gettext gcc autoconf libtool automake make asciidoc xmlto c-ares-devel libev-devel pcre-devel qrencode
 
     install_libsodium
     install_mbedtls
@@ -93,10 +100,8 @@ install_centos-7() {
     yum update -y
 
     # install dependencies
-    yum install epel-release -y
-    yum update -y
-    yum install gcc gettext autoconf libtool automake make pcre-devel asciidoc xmlto udns-devel libev-devel python-pip -y
-    pip install qrcode
+    yum install --enablerepo=extras epel-release -y
+    yum install gcc gettext autoconf libtool automake make pcre-devel asciidoc xmlto udns-devel libev-devel qrencode -y
 
     # install shadowsocks-libev
     curl -Lk \
@@ -110,14 +115,13 @@ init_config() {
     test -d $cfg_dir || mkdir $cfg_dir
     cat <<EOC >$cfg_dir/config.json
 {
-    "server" : "$SS_SERVER",
     "server_port" : $SS_PORT,
     "password" : "$SS_PASSWORD",
     "method" : "$SS_METHOD"
 }
 EOC
     echo -n "ss://"`echo -n ${SS_METHOD}:${SS_PASSWORD}@${SS_SERVER}:${SS_PORT} \
-      | base64` | qr > $cfg_dir/ss.png
+      | base64` | qrencode -t ANSI | tee $cfg_dir/ss-qr.txt
 }
 
 main() {
@@ -125,6 +129,8 @@ main() {
         err "Root privilege required"
         return 1
     }
+    get_value SS_PASSWORD
+    get_value SS_PORT
     distro=$(get_distro)
     install_${distro}
     init_config
