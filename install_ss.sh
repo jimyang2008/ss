@@ -31,11 +31,13 @@ get_distro() {
 }
 
 install_ubuntu-16.04() {
+    apt-get update -y
     apt-get install software-properties-common -y
     add-apt-repository ppa:max-c-lv/shadowsocks-libev -y
     apt-get update -y
     apt install -y shadowsocks-libev
-    apt-get install -y qrencode
+    apt-get install -y qrencode iproute
+    systemctl start shadowsocks-libev
 }
 
 install_libsodium() {
@@ -68,7 +70,7 @@ install_centos-6() {
 
     # build environment
     yum install --enablerepo=extras epel-release -y
-    yum install -y gettext gcc autoconf libtool automake make asciidoc xmlto c-ares-devel libev-devel pcre-devel qrencode
+    yum install -y gettext gcc autoconf libtool automake make asciidoc xmlto c-ares-devel libev-devel pcre-devel qrencode iproute
 
     install_libsodium
     install_mbedtls
@@ -92,6 +94,8 @@ install_centos-6() {
       ## modify /usr/bin to /usr/local/bin as libev installed to /usr/local/bin by default
       sed -i 's|/usr/bin/|/usr/local/bin/|g' /etc/init.d/shadowsocks-libev
       chmod +x /etc/init.d/shadowsocks-libev
+      chkconfig --add shadowsocks-libev
+      /etc/init.d/shadowsocks-libev start
     )
 }
 
@@ -101,20 +105,24 @@ install_centos-7() {
 
     # install dependencies
     yum install --enablerepo=extras epel-release -y
-    yum install gcc gettext autoconf libtool automake make pcre-devel asciidoc xmlto udns-devel libev-devel qrencode -y
+    yum install -y gcc gettext autoconf libtool automake make pcre-devel asciidoc xmlto udns-devel libev-devel qrencode iproute
 
     # install shadowsocks-libev
     curl -Lk \
       -o /etc/yum.repos.d/librehat-shadowsocks-epel-7.repo \
       https://copr.fedoraproject.org/coprs/librehat/shadowsocks/repo/epel-7/librehat-shadowsocks-epel-7.repo
     yum install -y shadowsocks-libev
+    systemctl enable shadowsocks-libev
+    systemctl start shadowsocks-libev
 }
 
 init_config() {
+    : ${SS_SERVER:=$(ip addr | grep -w inet | awk '/global/ {print $2}'|cut -f1 -d/)}
     cfg_dir=/etc/shadowsocks-libev
     test -d $cfg_dir || mkdir $cfg_dir
     cat <<EOC >$cfg_dir/config.json
 {
+    "server" : "$SS_SERVER",
     "server_port" : $SS_PORT,
     "password" : "$SS_PASSWORD",
     "method" : "$SS_METHOD"
