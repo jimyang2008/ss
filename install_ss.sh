@@ -107,6 +107,10 @@ install_centos-7() {
     yum install --enablerepo=extras epel-release -y
     yum install -y gcc gettext autoconf libtool automake make pcre-devel asciidoc xmlto udns-devel libev-devel qrencode iproute
 
+    # install libsodium and mbedtls
+    install_libsodium
+    install_mbedtls
+
     # install shadowsocks-libev
     curl -Lk \
       -o /etc/yum.repos.d/librehat-shadowsocks-epel-7.repo \
