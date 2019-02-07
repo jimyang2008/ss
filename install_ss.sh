@@ -120,6 +120,26 @@ install_centos-7() {
     systemctl start shadowsocks-libev
 }
 
+install_amzn-2() {
+    # update yum
+    yum update -y
+
+    # install dependencies
+    amazon-linux-extras install -y epel
+    yum install -y gcc gettext autoconf libtool automake make pcre-devel asciidoc xmlto udns-devel libev-devel qrencode iproute
+
+    # install libsodium and mbedtls
+    yum install -y libsodium mbedtls
+
+    # install shadowsocks-libev
+    curl -Lk \
+      -o /etc/yum.repos.d/librehat-shadowsocks-epel-7.repo \
+      https://copr.fedoraproject.org/coprs/librehat/shadowsocks/repo/epel-7/librehat-shadowsocks-epel-7.repo
+    yum install -y shadowsocks-libev
+    systemctl enable shadowsocks-libev
+    systemctl start shadowsocks-libev
+}
+
 init_config() {
     : ${SS_SERVER:=$(ip addr | grep -w inet | awk '/global/ {print $2}'|cut -f1 -d/)}
     cfg_dir=/etc/shadowsocks-libev
