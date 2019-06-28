@@ -42,7 +42,7 @@ install_ubuntu-16.04() {
 
 install_libsodium() {
     export LIBSODIUM_VER=1.0.15
-    curl -LOk https://download.libsodium.org/libsodium/releases/libsodium-$LIBSODIUM_VER.tar.gz
+    curl -LOk https://download.libsodium.org/libsodium/releases/old/libsodium-$LIBSODIUM_VER.tar.gz
     tar -xzf libsodium-$LIBSODIUM_VER.tar.gz
     pushd libsodium-$LIBSODIUM_VER
     ./configure --prefix=/usr && make
