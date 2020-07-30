@@ -3,9 +3,9 @@ set -x
 
 CMDDIR=$(dirname $0)
 SS_CONFIG=/etc/shadowsocks-libev/config.json 
-SS_SERVER=103.238.226.193
+SS_SERVER=18.162.113.58
 SS_LPORT=12345
-LAN_CIDR=192.168.6.0/24
+LAN_CIDR=172.31.12.74/20
 IPSETS='lan chnroute'
 
 err() {
@@ -87,7 +87,9 @@ prepare_chnroute() {
 }
 
 install_sslibev() {
-    sh -c 'printf "deb http://deb.debian.org/debian stretch-backports main" > /etc/apt/sources.list.d/stretch-backports.list'
+    . /etc/lsb-release
+    DISTRIB_CODENAME
+    sh -c "printf \"deb http://deb.debian.org/debian ${DISTRIB_CODENAME}-backports main\" > /etc/apt/sources.list.d/${DISTRIB_CODENAME}-backports.list"
     apt-get update -y
     apt-get -t stretch-backports install -y --allow-unauthenticated shadowsocks-libev
 }
