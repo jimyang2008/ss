@@ -91,7 +91,7 @@ install_sslibev() {
     DISTRIB_CODENAME
     sh -c "printf \"deb http://deb.debian.org/debian ${DISTRIB_CODENAME}-backports main\" > /etc/apt/sources.list.d/${DISTRIB_CODENAME}-backports.list"
     apt-get update -y
-    apt-get -t stretch-backports install -y --allow-unauthenticated shadowsocks-libev
+    apt-get -t ${DISTRIB_CODENAME}-backports install -y --allow-unauthenticated shadowsocks-libev
 }
 
 install_chinadns() {
