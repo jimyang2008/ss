@@ -40,6 +40,16 @@ install_ubuntu-16.04() {
     systemctl start shadowsocks-libev
 }
 
+install_ubuntu-20.04() {
+    apt-get update -y
+    apt-get install software-properties-common -y
+    add-apt-repository ppa:max-c-lv/shadowsocks-libev -y
+    apt-get update -y
+    apt install -y shadowsocks-libev
+    apt-get install -y qrencode iproute2
+    systemctl start shadowsocks-libev
+}
+
 install_libsodium() {
     export LIBSODIUM_VER=1.0.15
     curl -LOk https://download.libsodium.org/libsodium/releases/old/libsodium-$LIBSODIUM_VER.tar.gz
